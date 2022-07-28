@@ -23,8 +23,8 @@ public class ArticleController {
 
         long id = articleService.write(title, body);
 
-        rq.appendBody("%d번 게시물이 생성 되었습니다.".formatted(id));
-        rq.appendBody("<div><a href=\"/usr/article/list/free\">리스트로 이동</a></div>");
+        rq.println("%d번 게시물이 생성 되었습니다.".formatted(id));
+        rq.println("<div><a href=\"/usr/article/list/free\">리스트로 이동</a></div>");
     }
 
     public void showList(Rq rq){
@@ -37,13 +37,13 @@ public class ArticleController {
     public void showDetail(Rq rq) {
         long id = rq.getLongPathValueByIndex(1, 0);
         if( id == 0){
-            rq.appendBody("번호를 입력해주세요");
+            rq.println("번호를 입력해주세요");
             return;
         }
         ArticleDto findArticle = articleService.findById(id);
 
         if (findArticle == null) {
-            rq.appendBody("해당 글이 존재하지 않습니다.");
+            rq.println("해당 글이 존재하지 않습니다.");
             return;
         }
 
@@ -54,12 +54,12 @@ public class ArticleController {
     public void doDelete(Rq rq) {
         long id = rq.getLongPathValueByIndex(1, 0);
         if( id == 0){
-            rq.appendBody("번호를 입력해주세요");
+            rq.println("번호를 입력해주세요");
             return;
         }
         articleService.articleDelete(id);
-        rq.appendBody("<div>%d번 게시물이 삭제되었습니다.</div>".formatted(id));
-        rq.appendBody("<div><a href=\"/usr/article/list/free\">리스트로 이동</a></div>");
+        rq.println("<div>%d번 게시물이 삭제되었습니다.</div>".formatted(id));
+        rq.println("<div><a href=\"/usr/article/list/free\">리스트로 이동</a></div>");
 
 
 
@@ -72,24 +72,24 @@ public class ArticleController {
         ArticleModifyDto articleModifyDto = new ArticleModifyDto(title, body);
         long id = rq.getLongPathValueByIndex(1, 0);
         if( id == 0){
-            rq.appendBody("번호를 입력해주세요");
+            rq.println("번호를 입력해주세요");
             return;
         }
         articleService.articleModify(id, articleModifyDto);
-        rq.appendBody("<div>%d번 게시물이 수정되었습니다.</div>".formatted(id));
-        rq.appendBody("<div><a href=\"/usr/article/list/free\">리스트로 이동</a></div>");
+        rq.println("<div>%d번 게시물이 수정되었습니다.</div>".formatted(id));
+        rq.println("<div><a href=\"/usr/article/list/free\">리스트로 이동</a></div>");
     }
 
     public void showModify(Rq rq) {
         long id = rq.getLongPathValueByIndex(1, 0);
         if( id == 0){
-            rq.appendBody("번호를 입력해주세요");
+            rq.println("번호를 입력해주세요");
             return;
         }
         ArticleDto findArticle = articleService.findById(id);
 
         if (findArticle == null) {
-            rq.appendBody("해당 글이 존재하지 않습니다.");
+            rq.println("해당 글이 존재하지 않습니다.");
             return;
         }
         rq.setAttr("article", findArticle);
@@ -98,7 +98,44 @@ public class ArticleController {
 
     public void getArticles(Rq rq) {
         List<ArticleDto> list = articleService.getList();
-        String toJson = Ut.json.toJson(list, "");
-        rq.appendBody(toJson);
+        Test test = new Test(list);
+        rq.json(test);
+    }
+
+    class Test {
+        String resultCode;
+        String msg;
+        List<ArticleDto> data;
+
+        public Test(List<ArticleDto> data) {
+            this.resultCode = "S-1";
+            this.msg = "성공";
+            this.data = data;
+        }
+
+
+        public String getResultCode() {
+            return resultCode;
+        }
+
+        public void setResultCode(String resultCode) {
+            this.resultCode = resultCode;
+        }
+
+        public String getMsg() {
+            return msg;
+        }
+
+        public void setMsg(String msg) {
+            this.msg = msg;
+        }
+
+        public List<ArticleDto> getData() {
+            return data;
+        }
+
+        public void setData(List<ArticleDto> data) {
+            this.data = data;
+        }
     }
 }

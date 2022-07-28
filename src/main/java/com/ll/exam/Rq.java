@@ -1,5 +1,7 @@
 package com.ll.exam;
 
+import com.ll.exam.article.dto.ArticleDto;
+import com.ll.exam.util.Ut;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -43,7 +45,7 @@ public class Rq {
     }
 
 
-    public void appendBody(String formatted) {
+    public void println(String formatted) {
         try {
             resp.getWriter().append(formatted);
         } catch (IOException e) {
@@ -107,9 +109,43 @@ public class Rq {
             return defaultValue;
         }
     }
+    public void replace(String uri, String msg) {
+        if (msg != null && msg.trim().length() > 0) {
+            println("""
+                    <script>
+                    alert("%s");
+                    </script>
+                    """.formatted(msg));
+        }
 
-
-    public String getMethod() {
-        return req.getMethod();
+        println("""
+                <script>
+                location.replace("%s");
+                </script>
+                """.formatted(uri));
     }
+
+    public void historyBack(String msg) {
+        if (msg != null && msg.trim().length() > 0) {
+            println("""
+                    <script>
+                    alert("%s");
+                    </script>
+                    """.formatted(msg));
+        }
+
+        println("""
+                <script>
+                history.back();
+                </script>
+                """);
+    }
+
+
+    public void json(Object data){
+        resp.setContentType("application/json; charset=utf-8");
+        String jsonStr = Ut.json.toJson(data, "");
+        println(jsonStr);
+    }
+
 }

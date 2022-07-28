@@ -5,6 +5,7 @@ import com.ll.exam.article.dto.ArticleModifyDto;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class ArticleRepository {
     private static List<ArticleDto> datum;
@@ -13,7 +14,26 @@ public class ArticleRepository {
     static {
         datum = new ArrayList<>();
         lastId = 0;
+        makeTestData();
     }
+
+    private static void makeTestData() {
+        IntStream.rangeClosed(1, 10).forEach(id -> {
+            String title = "제목%d".formatted(id);
+            String body = "내용%d".formatted(id);
+            tempWrite(title, body);
+        });
+    }
+
+    public static long tempWrite(String title, String body) {
+        long id = ++lastId;
+        ArticleDto newArticleDto = new ArticleDto(id, title, body);
+
+        datum.add(newArticleDto);
+
+        return id;
+    }
+
 
     public long write(String title, String body) {
         long id = ++lastId;
