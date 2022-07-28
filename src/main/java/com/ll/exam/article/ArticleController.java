@@ -5,8 +5,7 @@ import com.ll.exam.article.dto.ArticleDto;
 import com.ll.exam.article.dto.ArticleModifyDto;
 import com.ll.exam.util.Ut;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ArticleController {
 
@@ -98,44 +97,16 @@ public class ArticleController {
 
     public void getArticles(Rq rq) {
         List<ArticleDto> list = articleService.getList();
-        Test test = new Test(list);
-        rq.json(test);
+
+        Map<String, Object> resultData = new LinkedHashMap<>();
+        resultData.put("resultCode", "S-1");
+        resultData.put("msg", "성공");
+        resultData.put("data", list);
+
+        rq.json(resultData);
+
+
     }
 
-    class Test {
-        String resultCode;
-        String msg;
-        List<ArticleDto> data;
 
-        public Test(List<ArticleDto> data) {
-            this.resultCode = "S-1";
-            this.msg = "성공";
-            this.data = data;
-        }
-
-
-        public String getResultCode() {
-            return resultCode;
-        }
-
-        public void setResultCode(String resultCode) {
-            this.resultCode = resultCode;
-        }
-
-        public String getMsg() {
-            return msg;
-        }
-
-        public void setMsg(String msg) {
-            this.msg = msg;
-        }
-
-        public List<ArticleDto> getData() {
-            return data;
-        }
-
-        public void setData(List<ArticleDto> data) {
-            this.data = data;
-        }
-    }
 }
