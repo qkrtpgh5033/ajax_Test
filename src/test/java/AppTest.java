@@ -104,7 +104,7 @@ public class AppTest {
         hashMap.put(article3.getId(), ArticleBodyDto.from(article3));
         String jsonStr = Ut.json.toJson(hashMap, "");
 
-        Map<Integer, ArticleBodyDto> map = Ut.json.toMap(jsonStr, new TypeReference<>() {
+        Map<Integer, ArticleBodyDto> map = Ut.json.toObj(jsonStr, new TypeReference<>() {
         }, null);
 
         System.out.println(map);
