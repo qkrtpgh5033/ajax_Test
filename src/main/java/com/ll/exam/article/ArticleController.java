@@ -3,6 +3,7 @@ package com.ll.exam.article;
 import com.ll.exam.Rq;
 import com.ll.exam.article.dto.ArticleDto;
 import com.ll.exam.article.dto.ArticleModifyDto;
+import com.ll.exam.util.Ut;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,6 @@ public class ArticleController {
     }
 
     public void showDetail(Rq rq) {
-
         long id = rq.getLongPathValueByIndex(1, 0);
         if( id == 0){
             rq.appendBody("번호를 입력해주세요");
@@ -94,5 +94,11 @@ public class ArticleController {
         }
         rq.setAttr("article", findArticle);
         rq.view("/usr/article/modify");
+    }
+
+    public void getArticles(Rq rq) {
+        List<ArticleDto> list = articleService.getList();
+        String toJson = Ut.json.toJson(list, "");
+        rq.appendBody(toJson);
     }
 }
