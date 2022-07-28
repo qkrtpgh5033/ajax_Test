@@ -3,6 +3,7 @@ package com.ll.exam.article;
 import com.ll.exam.Rq;
 import com.ll.exam.article.dto.ArticleDto;
 import com.ll.exam.article.dto.ArticleModifyDto;
+import com.ll.exam.util.ResultData;
 import com.ll.exam.util.Ut;
 
 import java.util.*;
@@ -97,14 +98,8 @@ public class ArticleController {
 
     public void getArticles(Rq rq) {
         List<ArticleDto> list = articleService.getList();
-
-        Map<String, Object> resultData = new LinkedHashMap<>();
-        resultData.put("resultCode", "S-1");
-        resultData.put("msg", "성공");
-        resultData.put("data", list);
-
+        ResultData resultData = new ResultData("성공", "S-1", list);
         rq.json(resultData);
-
 
     }
 
