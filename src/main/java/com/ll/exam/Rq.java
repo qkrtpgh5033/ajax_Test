@@ -148,4 +148,20 @@ public class Rq {
         println(jsonStr);
     }
 
+    public long getLongParam(String paramName, long defaultValue) {
+        String value = req.getParameter(paramName);
+
+        if (value == null) {
+            return defaultValue;
+        }
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+
+
 }
