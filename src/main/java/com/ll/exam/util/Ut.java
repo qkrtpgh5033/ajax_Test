@@ -4,25 +4,37 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.util.HashMap;
+import java.lang.invoke.VarHandle;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 public class Ut {
-    private static final ObjectMapper om = new ObjectMapper();
+    public static Map<String, Object> mapOf(Object... args) {
+        int dataSize = args.length / 2;
 
-    public static Map mapOf(Object...objects){
         Map<String, Object> map = new LinkedHashMap<>();
-        for(int i = 0; i < objects.length; i+=2){
-            map.put((String) objects[i], objects[i + 1]);
+
+        for ( int i = 0; i < dataSize; i++ ) {
+            int keyIndex = i * 2 + 0;
+            int valueIndex = i * 2 + 1;
+
+            String key = (String)args[keyIndex];
+            Object value = args[valueIndex];
+
+            map.put(key, value);
         }
 
         return map;
-
     }
+
     public static class json {
-        public static String toJson(Object obj, String defaultValue) {
+        private static final ObjectMapper om;
+
+        static {
+            om = new ObjectMapper();
+        }
+
+        public static String toStr(Object obj, String defaultValue) {
             try {
                 return om.writeValueAsString(obj);
             } catch (JsonProcessingException e) {
@@ -30,10 +42,9 @@ public class Ut {
             }
         }
 
-
         public static <T> T toObj(String jsonStr, Class<T> cls, T defaultValue) {
             try {
-                return (T) om.readValue(jsonStr, cls);
+                return om.readValue(jsonStr, cls);
             } catch (JsonProcessingException e) {
                 return defaultValue;
             }
@@ -46,7 +57,5 @@ public class Ut {
                 return defaultValue;
             }
         }
-
-
     }
 }

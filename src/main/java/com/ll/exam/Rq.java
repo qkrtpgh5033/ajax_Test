@@ -1,6 +1,5 @@
 package com.ll.exam;
 
-import com.ll.exam.article.dto.ArticleDto;
 import com.ll.exam.util.Ut;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -11,55 +10,79 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 public class Rq {
-    HttpServletRequest req;
-    HttpServletResponse resp;
-
-
+    private final HttpServletRequest req;
+    private final HttpServletResponse resp;
 
     public Rq(HttpServletRequest req, HttpServletResponse resp) {
-
-
         this.req = req;
         this.resp = resp;
 
         try {
             req.setCharacterEncoding("UTF-8");
-            resp.setCharacterEncoding("UTF-8");
-            resp.setContentType("text/html; charset=utf-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/html; charset=utf-8");
     }
 
-    public int getIntParam(String parm, int defaultValue){
-        String value = req.getParameter(parm);
-        if(value == null)
+    public String getParam(String paramName, String defaultValue) {
+        String value = req.getParameter(paramName);
+
+        if (value == null || value.trim().length() == 0) {
             return defaultValue;
+        }
+
+        return value;
+    }
+
+    public long getLongParam(String paramName, long defaultValue) {
+        String value = req.getParameter(paramName);
+
+        if (value == null) {
+            return defaultValue;
+        }
+
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
+    }
+
+    public int getIntParam(String paramName, int defaultValue) {
+        String value = req.getParameter(paramName);
+
+        if (value == null) {
+            return defaultValue;
+        }
 
         try {
             return Integer.parseInt(value);
-        }catch (NumberFormatException e){
-            System.out.println(e);
+        } catch (NumberFormatException e) {
+            return defaultValue;
         }
-        return defaultValue;
     }
 
-
-    public void println(String formatted) {
+    public void print(String str) {
         try {
-            resp.getWriter().append(formatted);
+            resp.getWriter().append(str);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void println(String str) {
+        print(str + "\n");
     }
 
     public void setAttr(String name, Object value) {
         req.setAttribute(name, value);
     }
 
-    public void view(String path){
-        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/jsp" + path + ".jsp");
-
+    public void view(String path) {
+        // gugudan2.jsp 에게 나머지 작업을 토스
+        RequestDispatcher requestDispatcher = req.getRequestDispatcher("/jsp/" + path + ".jsp");
         try {
             requestDispatcher.forward(req, resp);
         } catch (ServletException e) {
@@ -69,38 +92,41 @@ public class Rq {
         }
     }
 
-
     public String getPath() {
         return req.getRequestURI();
     }
+
     public String getActionPath() {
         String[] bits = req.getRequestURI().split("/");
 
         return "/%s/%s/%s".formatted(bits[1], bits[2], bits[3]);
     }
-    public String getParam(String paramName, String defaultValue) {
-        String value = req.getParameter(paramName);
-        if(value == null || value.trim().length() == 0)
-            return defaultValue;
 
-        return value;
+    public String getRouteMethod() {
+        String method = getParam("_method", "");
+
+        if (method.length() > 0 ) {
+            return method.toUpperCase();
+        }
+
+        return req.getMethod();
     }
 
-    public long getLongPathValueByIndex(int index, int defaultValue){
-
+    public long getLongPathValueByIndex(int index, long defaultValue) {
         String value = getPathValueByIndex(index, null);
-        if( value == null)
-            return defaultValue;
 
-        try {
-            return Long.parseLong(value);
-        }catch (NumberFormatException e ){
+        if (value == null) {
             return defaultValue;
         }
 
+        try {
+            return Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return defaultValue;
+        }
     }
 
-    private String getPathValueByIndex(int index, String defaultValue) {
+    public String getPathValueByIndex(int index, String defaultValue) {
         String[] bits = req.getRequestURI().split("/");
 
         try {
@@ -109,6 +135,7 @@ public class Rq {
             return defaultValue;
         }
     }
+
     public void replace(String uri, String msg) {
         if (msg != null && msg.trim().length() > 0) {
             println("""
@@ -141,27 +168,22 @@ public class Rq {
                 """);
     }
 
-
-    public void json(Object data){
+    public void json(Object resultData) {
         resp.setContentType("application/json; charset=utf-8");
-        String jsonStr = Ut.json.toJson(data, "");
+
+        String jsonStr = Ut.json.toStr(resultData, "");
         println(jsonStr);
     }
 
-    public long getLongParam(String paramName, long defaultValue) {
-        String value = req.getParameter(paramName);
-
-        if (value == null) {
-            return defaultValue;
-        }
-
-        try {
-            return Long.parseLong(value);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+    public void json(Object data, String resultCode, String msg) {
+        json(new ResultData(resultCode, msg, data));
     }
 
+    public void successJson(Object data) {
+        json(data, "S-1", "성공");
+    }
 
-
+    public void failJson(Object data) {
+        json(data, "F-1", "실패");
+    }
 }

@@ -1,4 +1,4 @@
-package com.ll.exam.util;
+package com.ll.exam;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

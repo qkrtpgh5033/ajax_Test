@@ -24,7 +24,7 @@ public class AppTest {
     void 실험_ObjectMapper() throws JsonProcessingException {
         ArticleDto articleDto = new ArticleDto(1L, "제목", "내용");
 
-        String jsonStr = Ut.json.toJson(articleDto, "");
+        String jsonStr = Ut.json.toStr(articleDto, "");
         assertThat(jsonStr).isNotBlank();
         assertThat(jsonStr).isEqualTo("""
                 {"id":1,"title":"제목","body":"내용"}
@@ -35,7 +35,7 @@ public class AppTest {
     @Test
     void ObjectMapper__jsonStrToObj() {
         ArticleDto articleDtoOrigin = new ArticleDto(1L, "제목", "내용");
-        String jsonStr = Ut.json.toJson(articleDtoOrigin, "");
+        String jsonStr = Ut.json.toStr(articleDtoOrigin, "");
 
         ArticleDto articleDtoFromJson = Ut.json.toObj(jsonStr, ArticleDto.class, null);
 
@@ -50,7 +50,7 @@ public class AppTest {
 
         list.add(article1);
         list.add(article2);
-        String jsonStr = Ut.json.toJson(list, "");
+        String jsonStr = Ut.json.toStr(list, "");
         System.out.println(jsonStr);
 
         assertThat(jsonStr).isNotBlank();
@@ -68,7 +68,7 @@ public class AppTest {
         hashMap.put(article1.getId(), ArticleBodyDto.from(article1));
         hashMap.put(article2.getId(), ArticleBodyDto.from(article2));
 
-        String jsonStr = Ut.json.toJson(hashMap, "");
+        String jsonStr = Ut.json.toStr(hashMap, "");
         System.out.println(jsonStr);
 
         assertThat(jsonStr).isNotBlank();
@@ -84,7 +84,7 @@ public class AppTest {
         ArticleDto article2 = new ArticleDto(2L, "제목", "내용");
         list.add(article1);
         list.add(article2);
-        String jsonStr = Ut.json.toJson(list, "");
+        String jsonStr = Ut.json.toStr(list, "");
         System.out.println(jsonStr);
 
         List<ArticleDto> toObj = Ut.json.toObj(jsonStr, new TypeReference<>() {
@@ -102,7 +102,7 @@ public class AppTest {
         hashMap.put(article1.getId(), ArticleBodyDto.from(article1));
         hashMap.put(article2.getId(), ArticleBodyDto.from(article2));
         hashMap.put(article3.getId(), ArticleBodyDto.from(article3));
-        String jsonStr = Ut.json.toJson(hashMap, "");
+        String jsonStr = Ut.json.toStr(hashMap, "");
 
         Map<Integer, ArticleBodyDto> map = Ut.json.toObj(jsonStr, new TypeReference<>() {
         }, null);

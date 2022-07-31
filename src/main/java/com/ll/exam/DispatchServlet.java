@@ -29,6 +29,9 @@ public class DispatchServlet extends HttpServlet {
             case "/usr/article/list":
                 articleController.showList(rq);
                 break;
+            case "/usr/article/listAuto":
+                articleController.showListAuto(rq);
+                break;
             case "/usr/article/detail":
                 articleController.showDetail(rq);
                 break;
@@ -46,6 +49,7 @@ public class DispatchServlet extends HttpServlet {
                 break;
             case "/usr/article/getArticles":
                 articleController.getArticles(rq);
+                break;
 
         }
 

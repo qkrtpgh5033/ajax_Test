@@ -1,7 +1,6 @@
 package com.ll.exam.article;
 
 import com.ll.exam.article.dto.ArticleDto;
-import com.ll.exam.article.dto.ArticleModifyDto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +14,7 @@ public class ArticleRepository {
     static {
         datum = new ArrayList<>();
         lastId = 0;
+
         makeTestData();
     }
 
@@ -22,11 +22,11 @@ public class ArticleRepository {
         IntStream.rangeClosed(1, 10).forEach(id -> {
             String title = "제목%d".formatted(id);
             String body = "내용%d".formatted(id);
-            tempWrite(title, body);
+            write(title, body);
         });
     }
 
-    public static long tempWrite(String title, String body) {
+    public static long write(String title, String body) {
         long id = ++lastId;
         ArticleDto newArticleDto = new ArticleDto(id, title, body);
 
@@ -35,49 +35,41 @@ public class ArticleRepository {
         return id;
     }
 
-
-    public long write(String title, String body) {
-        long id = ++lastId;
-        ArticleDto newArticleDto = new ArticleDto(id, title, body);
-
-        datum.add(newArticleDto);
-
-        return id;
+    public static List<ArticleDto> findAll() {
+        return datum;
     }
 
-    public List<ArticleDto>  getList() {
-        return this.datum;
-    }
-
-    public ArticleDto findById(long id) {
-        for (ArticleDto findDto : datum) {
-            if (findDto.getId() == id) {
-                return findDto;
+    public static ArticleDto findById(long id) {
+        for (ArticleDto articleDto : datum) {
+            if (articleDto.getId() == id) {
+                return articleDto;
             }
         }
+
         return null;
     }
 
-    public void articleDelete(long id) {
-        ArticleDto findArticle = findById(id);
-        if (findArticle != null) {
-            datum.remove(findArticle);
-        }
+    public void delete(long id) {
+        ArticleDto articleDto = findById(id);
+
+        if (articleDto == null) return;
+
+        datum.remove(articleDto);
     }
 
-    public void articleModify(long id, ArticleModifyDto articleModifyDto) {
-        ArticleDto findArticle = findById(id);
-        if (findArticle != null) {
-            findArticle.setTitle(articleModifyDto.getTitle());
-            findArticle.setBody(articleModifyDto.getBody());
-        }
+    public void modify(long id, String title, String body) {
+        ArticleDto articleDto = findById(id);
+
+        if (articleDto == null) return;
+
+        articleDto.setTitle(title);
+        articleDto.setBody(body);
     }
 
     public List<ArticleDto> findAllIdGreaterThan(long fromId) {
         return datum
                 .stream()
-                .filter(articleDto -> articleDto.getId() >= fromId)
+                .filter(articleDto -> articleDto.getId() > fromId)
                 .collect(Collectors.toList());
     }
-
 }
