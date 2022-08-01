@@ -1,6 +1,7 @@
 package com.ll.exam.chat;
 
 import com.ll.exam.Rq;
+import com.ll.exam.article.dto.ArticleDto;
 import com.ll.exam.chat.dto.ChatMessageDto;
 import com.ll.exam.chat.dto.ChatRoomDto;
 
@@ -116,7 +117,28 @@ public class ChatController {
         rq.replace("/usr/chat/roomList", "%d번 채팅방이 삭제되었습니다.".formatted(id));
     }
 
+    // ajax 방식으로 채팅메세지를 리스팅
     public void showRoom(Rq rq) {
+        long id = rq.getLongPathValueByIndex(0, -1);
+
+        if (id == -1) {
+            rq.historyBack("번호를 입력해주세요.");
+            return;
+        }
+
+        ChatRoomDto chatRoomDto = chatService.findRoomById(id);
+
+        if (chatRoomDto == null) {
+            rq.historyBack("존재하지 않는 채팅방 입니다.");
+            return;
+        }
+
+        rq.setAttr("room", chatRoomDto);
+
+        rq.view("usr/chat/room");
+    }
+
+    public void showRoomManual(Rq rq) {
         long id = rq.getLongPathValueByIndex(0, -1);
 
         if (id == -1) {
@@ -131,14 +153,11 @@ public class ChatController {
             rq.historyBack("존재하지 않는 채팅방 입니다.");
             return;
         }
-        for (ChatMessageDto i : chatMessageDtos) {
-            System.out.println("i.getBody() = " + i.getBody());
-        }
+
         rq.setAttr("room", chatRoomDto);
         rq.setAttr("messages", chatMessageDtos);
 
-
-        rq.view("usr/chat/room");
+        rq.view("usr/chat/roomManual");
     }
 
     public void doWriteMessage(Rq rq) {
@@ -166,5 +185,87 @@ public class ChatController {
         chatService.writeMessage(roomId, body);
 
         rq.replace("/usr/chat/room/%d".formatted(roomId), "메세지가 등록되었습니다.");
+    }
+
+    public void doWriteMessageAjax(Rq rq) {
+        long roomId = rq.getLongPathValueByIndex(0, -1);
+
+        if (roomId == -1) {
+            rq.historyBack("채팅방 번호를 입력해주세요.");
+            return;
+        }
+
+        ChatRoomDto chatRoom = chatService.findRoomById(roomId);
+
+        if (chatRoom == null) {
+            rq.historyBack("존재하지 않는 채팅방 입니다.");
+            return;
+        }
+
+        String body = rq.getParam("body", "");
+
+        if (body.trim().length() == 0) {
+            rq.historyBack("내용을 입력해주세요.");
+            return;
+        }
+
+        long newChatMessageId = chatService.writeMessage(roomId, body);
+        rq.successJson(newChatMessageId);
+
+    }
+
+
+    public void getMessages(Rq rq) {
+        long roomId = rq.getLongPathValueByIndex(0, -1);
+
+        if (roomId == -1) {
+            rq.failJson("채팅방 번호를 입력해주세요.");
+            return;
+        }
+
+        ChatRoomDto chatRoom = chatService.findRoomById(roomId);
+
+        if (chatRoom == null) {
+            rq.failJson("존재하지 않는 채팅방 입니다.");
+            return;
+        }
+        long fromId = rq.getLongParam("fromId", -1);
+
+        List<ChatMessageDto> chatMessageDtos = null;
+
+        if ( fromId == -1 ) {
+            chatMessageDtos = chatService.findMessagesByRoomId(fromId);
+        }
+        else {
+            chatMessageDtos = chatService.findMessagesByRoomIdByRoomIdGreaterThan(roomId, fromId);
+        }
+
+        for (ChatMessageDto i : chatMessageDtos) {
+            System.out.println("i.getBody() = " + i.getBody());
+        }
+
+        rq.successJson(chatMessageDtos);
+    }
+
+    public void deleteMessage(Rq rq) {
+        long id = rq.getLongPathValueByIndex(0, 0);
+        System.out.println("체크");
+        if (id == 0) {
+            rq.historyBack("번호를 입력해주세요.");
+            return;
+        }
+
+        ChatMessageDto byMessageId = chatService.findByMessageId(id);
+        System.out.println("byMessageId.getBody() = " + byMessageId.getBody());
+        System.out.println("byMessageId.getId() = " + byMessageId.getId());
+        System.out.println("byMessageId.getRoomId() = " + byMessageId.getRoomId());
+        if (byMessageId == null) {
+            rq.historyBack("해당 글이 존재하지 않습니다.");
+            return;
+        }
+        long roomId = byMessageId.getRoomId();
+        chatService.deleteMessage(byMessageId);
+
+        rq.replace("/usr/chat/room/%d".formatted(roomId), "%d번 메세지가 삭제되었습니다.".formatted(id));
     }
 }

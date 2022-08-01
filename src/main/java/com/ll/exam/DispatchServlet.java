@@ -26,7 +26,7 @@ public class DispatchServlet extends HttpServlet {
          * http://localhost:8081/usr/article/list/free?page=1 에서
          * /usr/article/list/free 부분만 가져온다.
          */
-
+        System.out.println("Get -> rq.getActionPath() = " + rq.getActionPath());
         switch (rq.getActionPath()) {
             case "/usr/chat/createRoom":
                 chatController.showCreateRoom(rq);
@@ -39,6 +39,19 @@ public class DispatchServlet extends HttpServlet {
                 break;
             case "/usr/chat/room":
                 chatController.showRoom(rq);
+            case "/usr/chat/roomManual":
+                chatController.showRoomManual(rq);
+                break;
+
+            case "/usr/chat/getMessages":
+                chatController.getMessages(rq);
+                break;
+            case "/usr/chat/deleteMessage":
+                chatController.deleteMessage(rq);
+                break;
+
+
+
             case "/usr/article/list":
                 articleController.showList(rq);
                 break;
@@ -77,6 +90,10 @@ public class DispatchServlet extends HttpServlet {
             case "/usr/chat/writeMessage":
             chatController.doWriteMessage(rq);
                break;
+            case "/usr/chat/writeMessageAjax":
+                chatController.doWriteMessageAjax(rq);
+                break;
+
             case "/usr/chat/createRoom":
                 chatController.doCreateRoom(rq);
                 break;
@@ -96,14 +113,18 @@ public class DispatchServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             Rq rq = new Rq(req, resp);
+        System.out.println("rq.getActionPath() = " + rq.getActionPath());
 
             switch (rq.getActionPath()) {
                 case "/usr/chat/deleteRoom":
                     chatController.deleteRoom(rq);
                     break;
+
+
                 case "/usr/article/delete":
                     articleController.doDelete(rq);
                     break;
+
             }
     }
 }
