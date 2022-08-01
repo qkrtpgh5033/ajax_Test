@@ -14,7 +14,6 @@ public class ArticleRepository {
     static {
         datum = new ArrayList<>();
         lastId = 0;
-
         makeTestData();
     }
 
@@ -25,6 +24,9 @@ public class ArticleRepository {
             write(title, body);
         });
     }
+
+
+
 
     public static long write(String title, String body) {
         long id = ++lastId;
@@ -40,12 +42,11 @@ public class ArticleRepository {
     }
 
     public static ArticleDto findById(long id) {
-        for (ArticleDto articleDto : datum) {
-            if (articleDto.getId() == id) {
-                return articleDto;
+        for (ArticleDto findDto : datum) {
+            if (findDto.getId() == id) {
+                return findDto;
             }
         }
-
         return null;
     }
 
@@ -72,4 +73,5 @@ public class ArticleRepository {
                 .filter(articleDto -> articleDto.getId() > fromId)
                 .collect(Collectors.toList());
     }
+
 }

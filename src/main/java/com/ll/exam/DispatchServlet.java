@@ -1,6 +1,7 @@
 package com.ll.exam;
 
 import com.ll.exam.article.ArticleController;
+import com.ll.exam.chat.ChatController;
 import com.ll.exam.member.MemberController;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,6 +16,7 @@ public class DispatchServlet extends HttpServlet {
 
     MemberController memberController = new MemberController();
     ArticleController articleController = new ArticleController();
+    ChatController chatController = new ChatController();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,6 +28,17 @@ public class DispatchServlet extends HttpServlet {
          */
 
         switch (rq.getActionPath()) {
+            case "/usr/chat/createRoom":
+                chatController.showCreateRoom(rq);
+                break;
+            case "/usr/chat/modifyRoom":
+                chatController.showModifyRoom(rq);
+                break;
+            case "/usr/chat/roomList":
+                chatController.showRoomList(rq);
+                break;
+            case "/usr/chat/room":
+                chatController.showRoom(rq);
             case "/usr/article/list":
                 articleController.showList(rq);
                 break;
@@ -61,6 +74,15 @@ public class DispatchServlet extends HttpServlet {
         Rq rq = new Rq(req, resp);
 
         switch (rq.getActionPath()) {
+            case "/usr/chat/writeMessage":
+            chatController.doWriteMessage(rq);
+               break;
+            case "/usr/chat/createRoom":
+                chatController.doCreateRoom(rq);
+                break;
+            case "/usr/chat/modifyRoom":
+                chatController.doModifyRoom(rq);
+                break;
             case "/usr/article/write":
                 articleController.doWrite(rq);
                 break;
@@ -71,5 +93,17 @@ public class DispatchServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            Rq rq = new Rq(req, resp);
 
+            switch (rq.getActionPath()) {
+                case "/usr/chat/deleteRoom":
+                    chatController.deleteRoom(rq);
+                    break;
+                case "/usr/article/delete":
+                    articleController.doDelete(rq);
+                    break;
+            }
+    }
 }
