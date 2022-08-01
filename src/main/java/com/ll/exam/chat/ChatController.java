@@ -248,17 +248,14 @@ public class ChatController {
     }
 
     public void deleteMessage(Rq rq) {
+        System.out.println("delete");
         long id = rq.getLongPathValueByIndex(0, 0);
-        System.out.println("체크");
         if (id == 0) {
             rq.historyBack("번호를 입력해주세요.");
             return;
         }
 
         ChatMessageDto byMessageId = chatService.findByMessageId(id);
-        System.out.println("byMessageId.getBody() = " + byMessageId.getBody());
-        System.out.println("byMessageId.getId() = " + byMessageId.getId());
-        System.out.println("byMessageId.getRoomId() = " + byMessageId.getRoomId());
         if (byMessageId == null) {
             rq.historyBack("해당 글이 존재하지 않습니다.");
             return;
@@ -267,5 +264,28 @@ public class ChatController {
         chatService.deleteMessage(byMessageId);
 
         rq.replace("/usr/chat/room/%d".formatted(roomId), "%d번 메세지가 삭제되었습니다.".formatted(id));
+    }
+
+    public void deleteMessageAjax(Rq rq) {
+        System.out.println("Ajax");
+        long id = rq.getLongPathValueByIndex(0, 0);
+
+        if (id == 0) {
+            rq.failJson("번호를 입력해주세요.");
+            return;
+        }
+
+        ChatMessageDto chatMessageDto = chatService.findByMessageId(id);
+
+        if (chatMessageDto == null) {
+            rq.failJson("해당 메세지가 존재하지 않습니다.");
+            return;
+        }
+
+        long roomId = chatMessageDto.getRoomId();
+
+        chatService.deleteMessage(chatMessageDto);
+
+        rq.json(id, "S-1", "%d번 메세지가 삭제되었습니다.".formatted(id));
     }
 }

@@ -27,6 +27,7 @@ public class DispatchServlet extends HttpServlet {
          * /usr/article/list/free 부분만 가져온다.
          */
         System.out.println("Get -> rq.getActionPath() = " + rq.getActionPath());
+        System.out.println("rq.getRouteMethod() = " + rq.getRouteMethod());
         switch (rq.getActionPath()) {
             case "/usr/chat/createRoom":
                 chatController.showCreateRoom(rq);
@@ -46,11 +47,6 @@ public class DispatchServlet extends HttpServlet {
             case "/usr/chat/getMessages":
                 chatController.getMessages(rq);
                 break;
-            case "/usr/chat/deleteMessage":
-                chatController.deleteMessage(rq);
-                break;
-
-
 
             case "/usr/article/list":
                 articleController.showList(rq);
@@ -85,7 +81,7 @@ public class DispatchServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         Rq rq = new Rq(req, resp);
-
+        System.out.println("post -> rq.getActionPath() = " + rq.getActionPath());
         switch (rq.getActionPath()) {
             case "/usr/chat/writeMessage":
             chatController.doWriteMessage(rq);
@@ -113,13 +109,18 @@ public class DispatchServlet extends HttpServlet {
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
             Rq rq = new Rq(req, resp);
-        System.out.println("rq.getActionPath() = " + rq.getActionPath());
+            System.out.println("delete -> rq.getActionPath() = " + rq.getActionPath());
 
             switch (rq.getActionPath()) {
                 case "/usr/chat/deleteRoom":
                     chatController.deleteRoom(rq);
                     break;
-
+                case "/usr/chat/deleteMessage":
+                    chatController.deleteMessage(rq);
+                    break;
+                case "/usr/chat/deleteMessageAjax":
+                    chatController.deleteMessageAjax(rq);
+                    break;
 
                 case "/usr/article/delete":
                     articleController.doDelete(rq);
